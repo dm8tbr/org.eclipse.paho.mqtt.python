@@ -671,8 +671,8 @@ class Client(object):
             raise ValueError('Invalid host.')
         if port <= 0:
             raise ValueError('Invalid port number.')
-        if keepalive < 0:
-            raise ValueError('Keepalive must be >=0.')
+        if keepalive < 45:
+            raise ValueError('Keepalive must be >=45.')
         if bind_address != "" and bind_address is not None:
             if (sys.version_info[0] == 2 and sys.version_info[1] < 7) or (sys.version_info[0] == 3 and sys.version_info[1] < 2):
                 raise ValueError('bind_address requires Python 2.7 or 3.2.')
@@ -1585,7 +1585,7 @@ class Client(object):
         last_msg_out = self._last_msg_out
         last_msg_in = self._last_msg_in
         self._msgtime_mutex.release()
-        if (self._sock is not None or self._ssl is not None) and (now - last_msg_out >= self._keepalive or now - last_msg_in >= self._keepalive):
+        if (self._sock is not None or self._ssl is not None) and (now - last_msg_out + 30 >= self._keepalive or now - last_msg_in + 30 >= self._keepalive):
             if self._state == mqtt_cs_connected and self._ping_t == 0:
                 self._send_pingreq()
                 self._msgtime_mutex.acquire()
